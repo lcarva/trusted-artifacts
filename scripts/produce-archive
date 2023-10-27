@@ -1,0 +1,29 @@
+#!/bin/bash
+# TODO: Document this
+set -euo pipefail
+
+SRC_PATH="$1"
+DEST_PATH="$2"
+META_PATH="$3"
+
+# TODO: Add a check that the paths above must all be absolute paths?
+
+# Need to turn it into a relative path
+pushd "$(dirname ${SRC_PATH})" > /dev/null
+tar -czf "${DEST_PATH}" "$(basename ${SRC_PATH})"
+popd > /dev/null
+
+archive_hash="$(sha256sum "${DEST_PATH}" | cut -d' ' -f1)"
+
+# # The archive path has to be relative so it works across multiple tasks that use
+# # the same workspace, but may have different names for it. In other words, don't
+# # record in the result the name of the workspace mount path.
+# archive_path
+
+cat <<EOF | tee "${META_PATH}"
+{
+    "path": "${DEST_PATH}",
+    "hash": "${archive_hash}",
+    "type": "file"
+}
+EOF

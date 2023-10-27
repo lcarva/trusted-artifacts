@@ -1,0 +1,11 @@
+#!/bin/bash
+# TODO: Document this
+set -euo pipefail
+
+ARCHIVE_PATH="$1"
+ARCHIVE_HASH="$2"
+DEST_PATH="$3"
+
+echo "${ARCHIVE_HASH} ${ARCHIVE_PATH}" | sha256sum -c
+
+tar -xf "${ARCHIVE_PATH}" -C "${DEST_PATH}"
